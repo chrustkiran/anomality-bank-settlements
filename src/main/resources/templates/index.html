@@ -1,0 +1,25 @@
+<html xmlns:th="http://www.w3.org/1999/xhtml">
+<body>
+
+<h1>Status list</h1>
+
+<table>
+    <tr>
+        <th>ID</th>
+        <th>TIME</th>
+        <th>STATUS</th>
+    </tr>
+    <tr th:each="repository : ${repositories}">
+        <td th:text="${repository.getTrasection_id()}"></td>
+        <td th:text="${repository.getCreated_time()}"></td>
+        <td th:text="${repository.getStatus()}"></td>
+    </tr>
+</table>
+
+<p>
+    <a href="../home.html" th:href="@{/}">Return to home</a>
+</p>
+
+</body>
+
+</html>

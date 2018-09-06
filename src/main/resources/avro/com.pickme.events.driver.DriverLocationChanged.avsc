@@ -1,0 +1,94 @@
+{
+  "type" : "record",
+  "name" : "DriverLocationChanged",
+  "namespace" : "com.pickme.events.driver",
+  "fields" : [ {
+    "name" : "id",
+    "type" : "string"
+  }, {
+    "name" : "type",
+    "type" : "string"
+  }, {
+    "name" : "body",
+    "type" : {
+      "type" : "record",
+      "name" : "Body",
+      "namespace" : "com.pickme.events.driver.driver_location_changed",
+      "fields" : [ {
+        "name" : "driver_id",
+        "type" : "int"
+      }, {
+        "name" : "location",
+        "type" : {
+          "type" : "record",
+          "name" : "Location",
+          "fields" : [ {
+            "name" : "lat",
+            "type" : "float"
+          }, {
+            "name" : "lng",
+            "type" : "float"
+          }, {
+            "name" : "accuracy",
+            "type" : "float"
+          }, {
+            "name" : "speed",
+            "type" : "float"
+          }, {
+            "name" : "timestamp",
+            "type" : "long"
+          }, {
+            "name" : "bearing",
+            "type" : "float",
+            "default" : 0
+          } ]
+        }
+      } ]
+    }
+  }, {
+    "name" : "created_at",
+    "type" : "long"
+  }, {
+    "name" : "expiry",
+    "type" : "long",
+    "default" : 0
+  }, {
+    "name" : "version",
+    "type" : "int",
+    "default" : 0
+  }, {
+    "name" : "trace_info",
+    "type" : {
+      "type" : "record",
+      "name" : "TraceInfo",
+      "fields" : [ {
+        "name" : "trace_id",
+        "type" : {
+          "type" : "record",
+          "name" : "TraceId",
+          "fields" : [ {
+            "name" : "high",
+            "type" : "long",
+            "default" : 0
+          }, {
+            "name" : "low",
+            "type" : "long",
+            "default" : 0
+          } ]
+        }
+      }, {
+        "name" : "span_id",
+        "type" : "long",
+        "default" : 0
+      }, {
+        "name" : "parent_id",
+        "type" : "long",
+        "default" : 0
+      }, {
+        "name" : "sampled",
+        "type" : "boolean",
+        "default" : false
+      } ]
+    }
+  } ]
+}
