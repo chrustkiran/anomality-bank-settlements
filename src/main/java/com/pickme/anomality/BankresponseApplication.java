@@ -10,6 +10,7 @@ import org.apache.logging.log4j.Logger;
 
 @SpringBootApplication
 @ComponentScan(basePackages = {"com.pickme.anomality"})
+
 public class BankresponseApplication {
 
 

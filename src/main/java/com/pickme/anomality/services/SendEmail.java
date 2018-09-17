@@ -5,6 +5,8 @@ import com.pickme.anomality.BankresponseApplication;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +19,10 @@ import javax.activation.*;
 import java.util.Properties;
 
 @Component
+@PropertySources({
+        @PropertySource(value = {"classpath:application.properties"}),
+        @PropertySource(value = "file:/opt/bank-settlements/config/application.properties", ignoreResourceNotFound = true)
+})
 public class SendEmail {
 
 
@@ -45,8 +51,14 @@ private String toAddress;
 private String subject;
 
 
-    @Value("${mail.message}")
-private String body_message;
+    @Value("${mail.message.allfailed}")
+private String body_message_allfailed;
+
+    @Value("${mail.message.receivedfailed}")
+    private String body_message_allreceivedfailed;
+
+    @Value("${mail.message.updatedfailed}")
+    private String body_message_allupdatedfailed;
 
     @Value(("${time.zone}"))
     private String timeZone;
@@ -55,6 +67,8 @@ private String body_message;
     private String dateFormat;
 
 
+    private  String body_message;
+
     private long currentTime;
 
     private long specifiedTime;
@@ -62,7 +76,7 @@ private String body_message;
 
 
 
-    public void sendingEmail(long currentTime , long specifiedTime){
+    public void sendingEmail(int mode, long currentTime , long specifiedTime){
 
 
         this.currentTime = currentTime;
@@ -97,7 +111,17 @@ private String body_message;
             SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
             sdf.setTimeZone(TimeZone.getTimeZone(timeZone));
 
+            if(mode ==1){
+                body_message = body_message_allfailed;
+            }
 
+            else if(mode == 2){
+                body_message = body_message_allreceivedfailed;
+            }
+
+            else if(mode == 3 ){
+                body_message = body_message_allupdatedfailed;
+            }
             message.setText(body_message + "\nFailure time is between "+ sdf.format(this.specifiedTime) +" and "+sdf.format(this.currentTime));
 
             Transport.send(message);

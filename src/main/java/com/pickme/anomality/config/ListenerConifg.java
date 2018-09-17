@@ -6,6 +6,8 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
 import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.config.KafkaListenerContainerFactory;
@@ -18,6 +20,10 @@ import java.util.Map;
 
 @Configuration
 @EnableKafka
+@PropertySources({
+        @PropertySource(value = {"classpath:application.properties"}),
+        @PropertySource(value = "file:/opt/bank-settlements/config/application.properties", ignoreResourceNotFound = true)
+})
 public class ListenerConifg {
 
     @Value("${kafka.bootstrap-servers}")

@@ -25,7 +25,7 @@ public class BankresponseApplicationTests {
 		int transection_id = 1;
 		long created_time = 123456789;
 		String status = "4";
-		responseRepository.insertResponse(transection_id,created_time,status);
+		//responseRepository.insertResponse(transection_id,created_time,status);
 		Response newResponse =  responseRepository.findById(transection_id);
 		//Assert.assertEquals(created_time,newResponse.getCreated_time());
 	}
