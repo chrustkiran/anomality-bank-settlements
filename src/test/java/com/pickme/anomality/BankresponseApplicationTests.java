@@ -2,6 +2,7 @@ package com.pickme.anomality;
 
 import com.pickme.anomality.entity.Response;
 import com.pickme.anomality.dao.ResponseRepository;
+import com.pickme.anomality.services.SendSMS;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,9 @@ import org.springframework.test.context.junit4.SpringRunner;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class BankresponseApplicationTests {
+
+	@Autowired
+	SendSMS sendSMS;
 
 	@Autowired
 	ResponseRepository responseRepository;
@@ -38,5 +42,7 @@ public class BankresponseApplicationTests {
 
 		responseRepository.findAll(); // as for now it can't be tested.
 }
+
+
 
 }

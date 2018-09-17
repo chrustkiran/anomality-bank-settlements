@@ -1,6 +1,7 @@
 package com.pickme.anomality.services;
 
 import com.pickme.anomality.BankresponseApplication;
+import com.pickme.anomality.handler.APIHandler;
 import com.pickme.anomality.services.SendEmail;
 import com.pickme.anomality.entity.Response;
 import com.pickme.anomality.dao.ResponseRepository;
@@ -31,7 +32,7 @@ public class Startup implements ApplicationListener<ApplicationReadyEvent> {
     ResponseRepository responseRepository;
 
     @Autowired
-    SendEmail sendEmail;
+    APIHandler apiHandler;
 
     @Value("${time.interval}")
     int time_interval;
@@ -55,16 +56,16 @@ public class Startup implements ApplicationListener<ApplicationReadyEvent> {
 
                  if (allRequestFailed(Startup.this.specifiedTime)){
                      BankresponseApplication.getLogger().info("ALL ARE FAILED BETWEEN "+Startup.this.specifiedTime +" AND "+Startup.this.currentTime);
-                     sendEmail.sendingEmail(1,Startup.this.currentTime,Startup.this.specifiedTime);
+                     apiHandler.handlingServices(1,Startup.this.currentTime , Startup.this.specifiedTime);
                 }
                 if(allReceivedRequestFailed(Startup.this.specifiedTime)){
                      BankresponseApplication.getLogger().info("ALL RECIVED REQUESTS ARE FAILED BETWEEN "+Startup.this.specifiedTime + " AND "+ Startup.this.currentTime);
-                    sendEmail.sendingEmail(2,Startup.this.currentTime,Startup.this.specifiedTime);
+                    apiHandler.handlingServices(2,Startup.this.currentTime,Startup.this.specifiedTime);
                 }
 
                 if(allUpdatedRequestFailed(Startup.this.specifiedTime)){
                     BankresponseApplication.getLogger().info("ALL UPDATED REQUESTS ARE FAILED BETWEEN "+Startup.this.specifiedTime + " AND "+ Startup.this.currentTime);
-                    sendEmail.sendingEmail(3,Startup.this.currentTime,Startup.this.specifiedTime);
+                    apiHandler.handlingServices(3,Startup.this.currentTime,Startup.this.specifiedTime);
                 }
 
             }

@@ -3,18 +3,15 @@ package com.pickme.anomality.services;
 
 import com.pickme.anomality.BankresponseApplication;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.PropertySources;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
 import javax.mail.*;
 import javax.mail.internet.*;
-import javax.activation.*;
 
 import java.util.Properties;
 
@@ -25,34 +22,32 @@ import java.util.Properties;
 })
 public class SendEmail {
 
+    @Value("${mail.username}")
+    private String username;
 
-@Value("${mail.username}")
-private String username;
-
-@Value("${mail.password}")
-private String password;
+    @Value("${mail.password}")
+    private String password;
 
     @Value("${mail.smtp.auth}")
-private String auth;
+    private String auth;
 
     @Value("${mail.smtp.starttls.enable}")
-private String starttls;
+    private String starttls;
 
     @Value("${mail.smtp.host}")
-private String host;
+    private String host;
 
     @Value("${mail.smtp.port}")
-private String port;
+    private String port;
 
     @Value("${mail.toaddress}")
-private String toAddress;
+    private String toAddress;
 
     @Value("${mail.subject}")
-private String subject;
-
+    private String subject;
 
     @Value("${mail.message.allfailed}")
-private String body_message_allfailed;
+    private String body_message_allfailed;
 
     @Value("${mail.message.receivedfailed}")
     private String body_message_allreceivedfailed;
@@ -66,14 +61,15 @@ private String body_message_allfailed;
     @Value("${date.format}")
     private String dateFormat;
 
-
-    private  String body_message;
+    private String body_message;
 
     private long currentTime;
 
     private long specifiedTime;
 
+    private int mode;
 
+    private StringBuilder stringBuilder;
 
 
     public void sendingEmail(int mode, long currentTime , long specifiedTime){
@@ -81,6 +77,7 @@ private String body_message_allfailed;
 
         this.currentTime = currentTime;
         this.specifiedTime = specifiedTime;
+        this.mode = mode;
 
         Properties props = new Properties();
         props.put("mail.smtp.auth", auth);
@@ -111,17 +108,7 @@ private String body_message_allfailed;
             SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
             sdf.setTimeZone(TimeZone.getTimeZone(timeZone));
 
-            if(mode ==1){
-                body_message = body_message_allfailed;
-            }
-
-            else if(mode == 2){
-                body_message = body_message_allreceivedfailed;
-            }
-
-            else if(mode == 3 ){
-                body_message = body_message_allupdatedfailed;
-            }
+            assignMessage(mode);
             message.setText(body_message + "\nFailure time is between "+ sdf.format(this.specifiedTime) +" and "+sdf.format(this.currentTime));
 
             Transport.send(message);
@@ -134,5 +121,50 @@ private String body_message_allfailed;
 
         }
     }
+
+    private void assignMessage(int mode){
+        if(mode ==1){
+            body_message = body_message_allfailed;
+        }
+
+        else if(mode == 2){
+            body_message = body_message_allreceivedfailed;
+        }
+
+        else if(mode == 3 ){
+            body_message = body_message_allupdatedfailed;
+        }
+
+        SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
+        sdf.setTimeZone(TimeZone.getTimeZone(timeZone));
+        body_message = body_message + "\nFailure time is between "+ sdf.format(this.specifiedTime) +" and "+sdf.format(this.currentTime);
     }
+
+
+    public void handleMessage(int mode, long current_time, long modified_time) {
+        this.currentTime = currentTime;
+        this.specifiedTime = specifiedTime;
+        this.mode = mode;
+
+        assignMessage(mode);
+
+        if(body_message!=null){
+
+
+            stringBuilder = new StringBuilder("http://35.184.75.146:8004/sendEmail?html=<html><body><p>")
+                    .append(body_message)
+                    .append("</p></body></html>")
+                    .append("&subject=")
+                    .append(subject)
+                    .append("&fromName=PickMe&toAddr=")
+                    .append(toAddress);
+
+        }
+
+        String url = stringBuilder.toString();
+
+        RestTemplate restTemplate = new RestTemplate();
+        String results = restTemplate.getForObject(url, String.class);
+    }
+}
 

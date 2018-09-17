@@ -30,16 +30,14 @@ public class Listener {
     public void listen(ConsumerRecord<?,?> record) {
 
         try {
-           // BankresponseApplication.getLogger().info("Kafka consumer is working fine! ");
+            BankresponseApplication.getLogger().info("Kafka consumer is working fine! ");
             JSONObject jsonObject = new JSONObject(record.value().toString());
 
             JSONObject bodyObject = jsonObject.getJSONObject("body");
 
             //System.out.println(bodyObject.getInt("driver_id"));
 
-           responseRepository.insertResponse(bodyObject.getInt("id"),bodyObject.getInt("bank"),bodyObject.getString("transaction_reference_id"),bodyObject.getInt("payment_type"),bodyObject.getLong("payment_type_reference_id"),bodyObject.getInt("status"),bodyObject.getLong("updated_datetime"),bodyObject.getLong("created_datetime"));
-
-
+            responseRepository.insertResponse(bodyObject.getInt("id"),bodyObject.getInt("bank"),bodyObject.getString("transaction_reference_id"),bodyObject.getInt("payment_type"),bodyObject.getLong("payment_type_reference_id"),bodyObject.getInt("status"),bodyObject.getLong("updated_datetime"),bodyObject.getLong("created_datetime"));
         }
         catch (Exception e){
             BankresponseApplication.getLogger().error("Kafka consuming error!");
