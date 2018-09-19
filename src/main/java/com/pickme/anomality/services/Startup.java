@@ -37,6 +37,10 @@ public class Startup implements ApplicationListener<ApplicationReadyEvent> {
     @Value("${time.interval}")
     int time_interval;
 
+
+    @Value(("${checking.time}"))
+    int checkingTime;
+
     private long specifiedTime;
 
     private long currentTime;
@@ -54,57 +58,60 @@ public class Startup implements ApplicationListener<ApplicationReadyEvent> {
                 specifiedTime();
                 BankresponseApplication.getLogger().info("Timer is running!");
 
-                 if (allRequestFailed(Startup.this.specifiedTime)){
+                 if (allRequestFailed(Startup.this.specifiedTime, Startup.this.currentTime)){
                      BankresponseApplication.getLogger().info("ALL ARE FAILED BETWEEN "+Startup.this.specifiedTime +" AND "+Startup.this.currentTime);
                      apiHandler.handlingServices(1,Startup.this.currentTime , Startup.this.specifiedTime);
                 }
-                if(allReceivedRequestFailed(Startup.this.specifiedTime)){
+                if(allReceivedRequestFailed(Startup.this.specifiedTime, Startup.this.currentTime)){
                      BankresponseApplication.getLogger().info("ALL RECIVED REQUESTS ARE FAILED BETWEEN "+Startup.this.specifiedTime + " AND "+ Startup.this.currentTime);
                     apiHandler.handlingServices(2,Startup.this.currentTime,Startup.this.specifiedTime);
                 }
 
-                if(allUpdatedRequestFailed(Startup.this.specifiedTime)){
+                if(allUpdatedRequestFailed(Startup.this.specifiedTime , Startup.this.currentTime)){
                     BankresponseApplication.getLogger().info("ALL UPDATED REQUESTS ARE FAILED BETWEEN "+Startup.this.specifiedTime + " AND "+ Startup.this.currentTime);
                     apiHandler.handlingServices(3,Startup.this.currentTime,Startup.this.specifiedTime);
                 }
 
             }
-        }, 0, 10000);       //it will check for every 10 secs.
+        }, 0, checkingTime);       //it will check for every 10 secs.
 
 
     }
 
-    private  boolean allRequestFailed(long time_interval){
+    private  boolean allRequestFailed(long specifiedTime , long currentTime ){
         boolean allfailed = false;
 
-        int failedRequests = responseRepository.findCountReceivedFail(time_interval)+responseRepository.findCountUpdatedFail(time_interval);
-        int allRequests = responseRepository.findCountinSpecifiedTime(time_interval);
-        if((failedRequests == allRequests) && allRequests >0  ){
+        int receicedRequests = responseRepository.findCountReceivedFail(specifiedTime , currentTime );
+        int updatedRequests = responseRepository.findCountUpdatedFail(specifiedTime , currentTime );
+        int allRequests = responseRepository.findCountinSpecifiedTime(specifiedTime , currentTime);
+        if((receicedRequests + updatedRequests == allRequests) && allRequests >0 && receicedRequests >0 && updatedRequests > 0){
             allfailed = true;
         }
         return allfailed;
     }
-    private  boolean allReceivedRequestFailed(long time_interval){
+    private  boolean allReceivedRequestFailed(long specifiedTime , long currentTime){
         boolean allReceivedfailed = false;
 
-        int failedRequests = responseRepository.findCountReceivedFail(time_interval)+responseRepository.findCountUpdatedFail(time_interval);
-        int allRequests = responseRepository.findCountinSpecifiedTime(time_interval);
+        int failedRequests = responseRepository.findCountReceivedFail(specifiedTime , currentTime);
+        int allRequests = responseRepository.findCountinSpecifiedTime(specifiedTime ,currentTime);
         if((failedRequests == allRequests) && allRequests >0  ){
             allReceivedfailed = true;
         }
         return allReceivedfailed;
     }
 
-    private  boolean allUpdatedRequestFailed(long time_interval){
+    private  boolean allUpdatedRequestFailed(long specifiedTime , long currentTime){
         boolean allUpdatedfailed = false;
 
-        int failedRequests = responseRepository.findCountUpdatedFail(time_interval);
-        int allRequests = responseRepository.findCountinSpecifiedTime(time_interval);
+        int failedRequests = responseRepository.findCountUpdatedFail(specifiedTime , currentTime);
+        int allRequests = responseRepository.findCountinSpecifiedTime(specifiedTime , currentTime);
         if((failedRequests == allRequests) && allRequests >0  ){
             allUpdatedfailed = true;
         }
         return allUpdatedfailed;
     }
+
+
     private void specifiedTime(){
         this.currentTime = Calendar.getInstance().getTimeInMillis();
         this.specifiedTime =   currentTime - time_interval*60*1000;

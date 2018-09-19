@@ -26,11 +26,27 @@ import java.util.Map;
 })
 public class ListenerConifg {
 
-    @Value("${kafka.bootstrap-servers}")
+    @Value("${bootstrap.servers}")
     private String bootstrapServers;
 
-    @Value("${group_id}")
+    @Value("${group.id}")
     private String group_id;
+
+    @Value("${key.deserializer}")
+    private String keyDeserializer;
+
+    @Value("${value.deserializer}")
+    private String valueDeserializer;
+
+    @Value("${schema.url}")
+    private String schemaUrl;
+
+    @Value("${auto.offset}")
+    private String autoOffset;
+
+
+
+
 
 
     @Bean
@@ -38,17 +54,17 @@ public class ListenerConifg {
         Map<String, Object> props = new HashMap<>();
         // list of host:port pairs used for establishing the initial connections to the Kafka cluster
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG,
-                "104.154.186.117:9092");
+                bootstrapServers);
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG,
-                StringDeserializer.class);
+                keyDeserializer);
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG,
-                "io.confluent.kafka.serializers.KafkaAvroDeserializer");
+                valueDeserializer);
         // allows a pool of processes to divide the work of consuming and processing records
-        props.put(ConsumerConfig.GROUP_ID_CONFIG, "group_id");
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, group_id);
         // automatically reset the offset to the earliest offset
-        props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+        props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, autoOffset);
 
-        props.put("schema.registry.url","http://35.184.181.97:8089");
+        props.put("schema.registry.url",schemaUrl);
 
         return props;
     }

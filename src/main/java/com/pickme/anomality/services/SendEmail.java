@@ -142,8 +142,8 @@ public class SendEmail {
 
 
     public void handleMessage(int mode, long current_time, long modified_time) {
-        this.currentTime = currentTime;
-        this.specifiedTime = specifiedTime;
+        this.currentTime = current_time ;
+        this.specifiedTime = modified_time;
         this.mode = mode;
 
         assignMessage(mode);

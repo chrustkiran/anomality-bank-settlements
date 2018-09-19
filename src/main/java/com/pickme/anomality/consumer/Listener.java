@@ -31,6 +31,8 @@ public class Listener {
 
         try {
             BankresponseApplication.getLogger().info("Kafka consumer is working fine! ");
+
+            System.out.println(record.value()   );
             JSONObject jsonObject = new JSONObject(record.value().toString());
 
             JSONObject bodyObject = jsonObject.getJSONObject("body");
